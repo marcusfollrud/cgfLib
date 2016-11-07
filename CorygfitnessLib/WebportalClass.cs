@@ -43,8 +43,8 @@ namespace CorygfitnessLib
 			Stream stream = r.GetResponseStream();
 			using (StreamReader sr = new StreamReader(stream))
 			{
-				var data = sr.ReadToEnd();
-				JObject loginInfo = new JObject(data);
+				string data = sr.ReadToEnd();
+				JObject loginInfo = JObject.Parse(data);
 
 				//Check if we were logged in.
 				try
@@ -71,7 +71,6 @@ namespace CorygfitnessLib
 			using (StreamReader sr = new StreamReader(stream))
 			{
 				var data = sr.ReadToEnd();
-				JObject loginInfo = JObject.Parse(data);
 
 				//Check if we were logged in.
 				try
@@ -107,10 +106,10 @@ namespace CorygfitnessLib
 				try
 				{
 					BlogPost blog = new BlogPost();
-					blog.id = json["blog"]["id"].ToString();
-					blog.content = json["blog"]["intro"].ToString();
-					blog.created = json["blog"]["created"].ToString();
-					blog.title = json["blog"]["title"].ToString();
+					blog.id = json["blog"][0]["id"].ToString();
+					blog.content = json["blog"][0]["intro"].ToString();
+					blog.created = json["blog"][0]["created"].ToString();
+					blog.title = json["blog"][0]["title"].ToString();
 					return blog;
 				}
 				catch (Exception ex)
@@ -194,21 +193,20 @@ namespace CorygfitnessLib
 
 
 				//Check if we were logged in.
+				Console.WriteLine(data);
+				JArray json = JArray.Parse(data);
 				try
 				{
-					JObject json = JObject.Parse(data);
-
 					FourWeekWorkoutArticle article = new FourWeekWorkoutArticle();
 					article.Title = json[0]["title"].ToString();
 					article.Content = json[0]["fulltext"].ToString();
 					return article;
-
 				}
 				catch (Exception ex)
 				{
-					//Could not get info.
 					return null;
 				}
+
 
 			}
 		}

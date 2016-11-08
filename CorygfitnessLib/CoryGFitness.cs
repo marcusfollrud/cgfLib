@@ -8,7 +8,7 @@ using System.Collections.Generic;
 namespace CorygfitnessLib
 {
 	
-	public class WebportalClass
+	public class CoryGFitness
 	{
 
 		private string _username;
@@ -18,18 +18,18 @@ namespace CorygfitnessLib
 		private CookieContainer _cookies;
 
 		/// <summary>
-		/// Initializes a new instance of the <see cref="T:CorygfitnessLib.WebportalClass"/> class.
+		/// Initializes a new instance of the <see cref="T:CorygfitnessLib.CoryGFitness"/> class.
 		/// </summary>
-		public WebportalClass()
+		public CoryGFitness()
 		{
 		}
 
 		/// <summary>
-		/// Initializes a new instance of the <see cref="T:CorygfitnessLib.WebportalClass"/> class.
+		/// Initializes a new instance of the <see cref="T:CorygfitnessLib.CoryGFitness"/> class.
 		/// </summary>
 		/// <param name="Username">Username.</param>
 		/// <param name="Password">Password.</param>
-		public WebportalClass(string Username, string Password)
+		public CoryGFitness(string Username, string Password)
 		{
 			_username = Username;
 			_password = Password;
@@ -63,7 +63,7 @@ namespace CorygfitnessLib
 			}
 		}
 
-		public List<BlogPostList> GetBlogPosts()
+		public List<BlogPostListItem> GetBlogPosts()
 		{
 			var response = GetHTTPData("http://corygfitness.com/index.php?option=com_api&app=users&resource=blogs&last=10000&format=json&key=b1d7173bc955357364485cf6089935cf","GET");
 
@@ -75,7 +75,7 @@ namespace CorygfitnessLib
 				//Check if we were logged in.
 				try
 				{
-					var list = JsonConvert.DeserializeObject<List<BlogPostList>>(data);
+					var list = JsonConvert.DeserializeObject<List<BlogPostListItem>>(data);
 					return list;
 				}
 				catch (Exception ex)
@@ -93,9 +93,9 @@ namespace CorygfitnessLib
 		/// </summary>
 		/// <returns>The blog post.</returns>
 		/// <param name="BlogId">Blog identifier.</param>
-		public BlogPost GetBlogPost(string BlogId)
+		public BlogPost GetBlogPost(BlogPostListItem Item)
 		{
-			var response = GetHTTPData(string.Format("http://corygfitness.com/index.php?option=com_api&app=users&resource=blog&blog_id={0}&format=json&key=b1d7173bc955357364485cf6089935cf",BlogId), "GET");
+			var response = GetHTTPData(string.Format("http://corygfitness.com/index.php?option=com_api&app=users&resource=blog&blog_id={0}&format=json&key=b1d7173bc955357364485cf6089935cf",Item.id), "GET");
 
 			Stream stream = response.GetResponseStream();
 			using (StreamReader sr = new StreamReader(stream))
@@ -127,7 +127,7 @@ namespace CorygfitnessLib
 		/// Gets the four week workout categories.
 		/// </summary>
 		/// <returns>The four week workout categories.</returns>
-		public List<FourWeekWorkoutsCategories> GetFourWeekWorkoutCategories()
+		public List<FourWeekWorkoutsCategory> GetFourWeekWorkoutCategories()
 		{
 			var response = GetHTTPData("http://corygfitness.com/index.php?option=com_api&app=users&resource=categories&format=json&key=b1d7173bc955357364485cf6089935cf&parent_id=8", "GET");
 			Stream stream = response.GetResponseStream();
@@ -138,7 +138,7 @@ namespace CorygfitnessLib
 				//Check if we were logged in.
 				try
 				{
-					var list = JsonConvert.DeserializeObject<List<FourWeekWorkoutsCategories>>(data);
+					var list = JsonConvert.DeserializeObject<List<FourWeekWorkoutsCategory>>(data);
 					return list;
 				}
 				catch (Exception ex)
@@ -155,9 +155,9 @@ namespace CorygfitnessLib
 		/// </summary>
 		/// <returns>The four week workout list.</returns>
 		/// <param name="CategoryId">Category identifier.</param>
-		public List<FourWeekWorkoutList> GetFourWeekWorkoutList(string CategoryId)
+		public List<FourWeekWorkoutList> GetFourWeekWorkoutList(FourWeekWorkoutsCategory Category)
 		{
-			var response = GetHTTPData(string.Format("http://corygfitness.com/index.php?option=com_api&app=users&resource=artcat&format=json&key=b1d7173bc955357364485cf6089935cf&category_id={0}",CategoryId), "GET");
+			var response = GetHTTPData(string.Format("http://corygfitness.com/index.php?option=com_api&app=users&resource=artcat&format=json&key=b1d7173bc955357364485cf6089935cf&category_id={0}",Category.id), "GET");
 			Stream stream = response.GetResponseStream();
 			using (StreamReader sr = new StreamReader(stream))
 			{
@@ -183,9 +183,9 @@ namespace CorygfitnessLib
 		/// </summary>
 		/// <returns>The four week article.</returns>
 		/// <param name="ArticleId">Article identifier.</param>
-		public FourWeekWorkoutArticle GetFourWeekArticle(string ArticleId)
+		public FourWeekWorkoutArticle GetFourWeekArticle(FourWeekWorkoutList Article)
 		{
-			var response = GetHTTPData(string.Format("http://corygfitness.com/index.php?option=com_api&app=users&resource=article&format=json&key=b1d7173bc955357364485cf6089935cf&article_id={0}", ArticleId), "GET");
+			var response = GetHTTPData(string.Format("http://corygfitness.com/index.php?option=com_api&app=users&resource=article&format=json&key=b1d7173bc955357364485cf6089935cf&article_id={0}", Article.id), "GET");
 			Stream stream = response.GetResponseStream();
 			using (StreamReader sr = new StreamReader(stream))
 			{
@@ -240,13 +240,14 @@ namespace CorygfitnessLib
 	/// <summary>
 	/// Blog post list.
 	/// </summary>
-	public class BlogPostList
+	public class BlogPostListItem
 	{
 		public string created;
 		public string id;
 		public string intro;
 		public string permalink;
 		public string title;
+
 	}
 
 	/// <summary>
@@ -264,7 +265,7 @@ namespace CorygfitnessLib
 	/// <summary>
 	/// Four week workouts base class.
 	/// </summary>
-	public class FourWeekWorkoutsCategories
+	public class FourWeekWorkoutsCategory
 	{
 		public string id, level, parent_id, title;
 	}
